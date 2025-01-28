@@ -16,6 +16,7 @@ import { JwsService } from '../crypto/JwsService'
 import { CredoError } from '../error'
 import { DependencyManager } from '../plugins'
 import { DidCommMessageRepository, StorageUpdateService, StorageVersionRepository } from '../storage'
+import { InMemoryTransportSessionRepository } from '../transport'
 
 import { AgentConfig } from './AgentConfig'
 import { extendModulesWithDefaultModules } from './AgentModules'
@@ -88,6 +89,20 @@ export class Agent<AgentModules extends AgentModulesInput = any> extends BaseAge
       throw new CredoError(
         "Missing required dependency: 'StorageService'. You can register it using the AskarModule, or implement your own."
       )
+    }
+
+    if (options.config.transportSessionRepository) {
+      dependencyManager.registerInstance(
+        InjectionSymbols.TransportSessionRepository,
+        options.config.transportSessionRepository
+      )
+    } else {
+      if (!dependencyManager.isRegistered(InjectionSymbols.TransportSessionRepository)) {
+        dependencyManager.registerSingleton(
+          InjectionSymbols.TransportSessionRepository,
+          InMemoryTransportSessionRepository
+        )
+      }
     }
 
     // TODO: contextCorrelationId for base wallet

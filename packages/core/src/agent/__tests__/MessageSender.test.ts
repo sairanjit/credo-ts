@@ -3,7 +3,6 @@ import type { ConnectionRecord } from '../../modules/connections'
 import type { ResolvedDidCommService } from '../../modules/didcomm'
 import type { DidDocumentService, IndyAgentService } from '../../modules/dids'
 import type { MessagePickupRepository } from '../../modules/message-pickup/storage'
-import type { OutboundTransport } from '../../transport'
 import type { EncryptedMessage } from '../../types'
 import type { AgentMessageSentEvent } from '../Events'
 
@@ -25,6 +24,7 @@ import { DidResolverService, DidDocument, VerificationMethod } from '../../modul
 import { DidCommV1Service } from '../../modules/dids/domain/service/DidCommV1Service'
 import { verkeyToInstanceOfKey } from '../../modules/dids/helpers'
 import { InMemoryMessagePickupRepository } from '../../modules/message-pickup/storage'
+import { InMemoryTransportSessionRepository, type OutboundTransport } from '../../transport'
 import { EnvelopeService as EnvelopeServiceImpl } from '../EnvelopeService'
 import { EventEmitter } from '../EventEmitter'
 import { AgentEventTypes } from '../Events'
@@ -107,14 +107,18 @@ describe('MessageSender', () => {
     routingKeys: [],
     senderKey: senderKey,
   }
-  session.inboundMessage = inboundMessage
+  session.hasReturnRoute = inboundMessage.hasAnyReturnRoute()
   session.send = jest.fn()
 
   const sessionWithoutKeys = new DummyTransportSession('sessionWithoutKeys-123')
-  sessionWithoutKeys.inboundMessage = inboundMessage
+  sessionWithoutKeys.hasReturnRoute = inboundMessage.hasAnyReturnRoute()
   sessionWithoutKeys.send = jest.fn()
 
-  const transportService = new TransportService(getAgentContext(), eventEmitter)
+  const transportService = new TransportService(
+    getAgentContext(),
+    eventEmitter,
+    new InMemoryTransportSessionRepository()
+  )
   const transportServiceFindSessionMock = mockFunction(transportService.findSessionByConnectionId)
   const transportServiceFindSessionByIdMock = mockFunction(transportService.findSessionById)
   const transportServiceHasInboundEndpoint = mockFunction(transportService.hasInboundEndpoint)

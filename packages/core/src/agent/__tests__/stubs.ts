@@ -1,12 +1,12 @@
-import type { AgentMessage } from '../AgentMessage'
+import type { TransportSession } from '../../transport'
 import type { EnvelopeKeys } from '../EnvelopeService'
-import type { TransportSession } from '../TransportService'
 
 export class DummyTransportSession implements TransportSession {
   public id: string
   public readonly type = 'http'
   public keys?: EnvelopeKeys
-  public inboundMessage?: AgentMessage
+  // public inboundMessage?: AgentMessage
+  public hasReturnRoute?: boolean
   public connectionId?: string
 
   public constructor(id: string) {

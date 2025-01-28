@@ -1,7 +1,6 @@
 import type { AgentMessage } from './AgentMessage'
 import type { EnvelopeKeys } from './EnvelopeService'
 import type { AgentMessageSentEvent } from './Events'
-import type { TransportSession } from './TransportService'
 import type { AgentContext } from './context'
 import type { ConnectionRecord } from '../modules/connections'
 import type { ResolvedDidCommService } from '../modules/didcomm'
@@ -20,6 +19,7 @@ import { didKeyToInstanceOfKey, verkeyToDidKey } from '../modules/dids/helpers'
 import { DidResolverService } from '../modules/dids/services/DidResolverService'
 import { MessagePickupRepository } from '../modules/message-pickup/storage'
 import { inject, injectable } from '../plugins'
+import { TransportSession } from '../transport'
 import { MessageValidator } from '../utils/MessageValidator'
 import { getProtocolScheme } from '../utils/uri'
 
@@ -125,8 +125,8 @@ export class MessageSender {
     const errors: Error[] = []
 
     // Try to send to already open session
-    const session = this.transportService.findSessionByConnectionId(connection.id)
-    if (session?.inboundMessage?.hasReturnRouting()) {
+    const session = await this.transportService.findSessionByConnectionId(connection.id)
+    if (session?.hasReturnRoute) {
       try {
         await session.send(agentContext, encryptedMessage)
         return
@@ -221,7 +221,7 @@ export class MessageSender {
       connectionId: connection.id,
     })
 
-    const session = this.findSessionForOutboundContext(outboundMessageContext)
+    const session = await this.findSessionForOutboundContext(outboundMessageContext)
 
     if (session) {
       this.logger.debug(`Found session with return routing for message '${message.id}' (connection '${connection.id}'`)
@@ -360,7 +360,7 @@ export class MessageSender {
   }
 
   private async sendMessageToService(outboundMessageContext: OutboundMessageContext) {
-    const session = this.findSessionForOutboundContext(outboundMessageContext)
+    const session = await this.findSessionForOutboundContext(outboundMessageContext)
 
     if (session) {
       this.logger.debug(`Found session with return routing for message '${outboundMessageContext.message.id}'`)
@@ -453,7 +453,7 @@ export class MessageSender {
     })
   }
 
-  private findSessionForOutboundContext(outboundContext: OutboundMessageContext) {
+  private async findSessionForOutboundContext(outboundContext: OutboundMessageContext) {
     let session: TransportSession | undefined = undefined
 
     // Use session id from outbound context if present, or use the session from the inbound message context
@@ -461,15 +461,15 @@ export class MessageSender {
 
     // Try to find session by id
     if (sessionId) {
-      session = this.transportService.findSessionById(sessionId)
+      session = await this.transportService.findSessionById(sessionId)
     }
 
     // Try to find session by connection id
     if (!session && outboundContext.connection?.id) {
-      session = this.transportService.findSessionByConnectionId(outboundContext.connection.id)
+      session = await this.transportService.findSessionByConnectionId(outboundContext.connection.id)
     }
 
-    return session && session.inboundMessage?.hasAnyReturnRoute() ? session : null
+    return session && session.hasReturnRoute ? session : null
   }
 
   private async retrieveServicesByConnection(

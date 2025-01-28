@@ -42,9 +42,9 @@ export class WsInboundTransport implements InboundTransport {
         this.socketIds[socketId] = socket
         const session = new WebSocketTransportSession(socketId, socket, this.logger)
         this.listenOnWebSocketMessages(agent, socket, session)
-        socket.on('close', () => {
+        socket.on('close', async () => {
           this.logger.debug('Socket closed.')
-          transportService.removeSession(session)
+          await transportService.removeSession(session)
         })
       } else {
         this.logger.debug(`Socket with id ${socketId} already exists.`)
@@ -118,3 +118,17 @@ export class WebSocketTransportSession implements TransportSession {
     }
   }
 }
+
+// How to manage the sessions for all 3 types of transports
+// 1. http
+// - This needs to have a res and req in session instance
+// -  this.res.status(200).end() will close the session
+// 2. ws
+//  - This needs to have a socket in session instance
+//  - this.socket.close() will close the session
+// 3. socketdock
+// - This need to have a url of socketdock server in session instance
+
+// Questions
+// 1. How to manage the sessions for all 3 types of transports ?
+// 2. Can we store a socket id in cache and again use the same socket id to send the message ?

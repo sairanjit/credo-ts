@@ -1,4 +1,5 @@
 import type { Logger } from './logger'
+import type { TransportSessionRepository } from './transport'
 
 export enum KeyDerivationMethod {
   /** default value in indy-sdk. Will be used when no value is provided */
@@ -84,6 +85,7 @@ export interface InitConfig {
   autoUpdateStorageOnStartup?: boolean
   backupBeforeStorageUpdate?: boolean
   processDidCommMessagesConcurrently?: boolean
+  transportSessionRepository?: TransportSessionRepository
 
   /**
    * Allow insecure http urls in places where this is usually required.

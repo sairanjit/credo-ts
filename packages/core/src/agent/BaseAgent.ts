@@ -1,11 +1,11 @@
 import type { AgentConfig } from './AgentConfig'
 import type { AgentApi, CustomOrDefaultApi, EmptyModuleMap, ModulesMap, WithoutDefaultModules } from './AgentModules'
-import type { TransportSession } from './TransportService'
 import type { Logger } from '../logger'
 import type { CredentialsModule } from '../modules/credentials'
 import type { MessagePickupModule } from '../modules/message-pickup'
 import type { ProofsModule } from '../modules/proofs'
 import type { DependencyManager } from '../plugins'
+import type { TransportSession } from '../transport'
 
 import { CredoError } from '../error'
 import { BasicMessagesApi } from '../modules/basic-messages'

@@ -1,5 +1,4 @@
-import type { InboundTransport, Agent, AgentContext } from '../../packages/core/src'
-import type { TransportSession } from '../../packages/core/src/agent/TransportService'
+import type { InboundTransport, Agent, AgentContext, TransportSession } from '../../packages/core/src'
 import type { EncryptedMessage } from '../../packages/core/src/types'
 import type { Subscription } from 'rxjs'
 

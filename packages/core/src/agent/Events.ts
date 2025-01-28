@@ -1,7 +1,7 @@
 import type { AgentMessage } from './AgentMessage'
-import type { TransportSession } from './TransportService'
 import type { OutboundMessageContext, OutboundMessageSendStatus } from './models'
 import type { ConnectionRecord } from '../modules/connections'
+import type { TransportSession } from '../transport'
 import type { EncryptedMessage } from '../types'
 import type { Observable } from 'rxjs'
 

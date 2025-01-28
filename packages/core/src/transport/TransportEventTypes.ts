@@ -1,5 +1,5 @@
+import type { TransportSession } from './storage'
 import type { BaseEvent } from '../agent/Events'
-import type { TransportSession } from '../agent/TransportService'
 
 export enum TransportEventTypes {
   OutboundWebSocketClosedEvent = 'OutboundWebSocketClosedEvent',
