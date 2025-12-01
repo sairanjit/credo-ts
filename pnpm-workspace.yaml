@@ -19,7 +19,7 @@ catalog:
   # https://github.com/openwallet-foundation-labs/oid4vc-ts/issues/102
   zod: ^3.25.74
   nock: ^14.0.10
-  express: ^5.1.0
+  express: ^5.2.0
   "@openwallet-foundation/askar-nodejs": ^0.4.2
   "@openwallet-foundation/askar-shared": ^0.4.2
   "@hyperledger/indy-vdr-nodejs": ^0.2.2
