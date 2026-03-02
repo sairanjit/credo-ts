@@ -54,12 +54,19 @@ export type MdocOpenId4VpDcApiDraft24SessionTranscriptOptions = {
   verifierGeneratedNonce: string
 }
 
+export type MdocDcApiSessionTranscriptOptions = {
+  type: 'dcapi'
+  encryptionInfoBase64Url: string
+  origin: string
+}
+
 export type MdocSessionTranscriptOptions =
   | MdocOpenId4VpSessionTranscriptOptions
   | MdocOpenId4VpDraft18SessionTranscriptOptions
   | MdocSessionTranscriptByteOptions
   | MdocOpenId4VpDcApiSessionTranscriptOptions
   | MdocOpenId4VpDcApiDraft24SessionTranscriptOptions
+  | MdocDcApiSessionTranscriptOptions
 
 export type MdocDocumentRequest = {
   docType: string
@@ -87,6 +94,50 @@ export type MdocDeviceResponseVerifyOptions = {
    * The base64Url-encoded device response string.
    */
   deviceResponse: string
+  now?: Date
+}
+
+export type MdocDocumentRequestReaderAuth = {
+  /**
+   * The reader's signing key from the KMS. Must have a keyId set.
+   */
+  readerKey: PublicJwk
+  /**
+   * The certificate chain (PEM or base64) to include in the x5chain unprotected header.
+   * The leaf certificate should be first.
+   */
+  x5chain: EncodedX509Certificate[]
+}
+
+export type MdocDcApiRequestOptions = {
+  documentRequests: (MdocDocumentRequest & { readerAuth?: MdocDocumentRequestReaderAuth })[]
+  nonce: Uint8Array
+  recipientPublicJwk: PublicJwk
+}
+
+export type MdocDcApiRequest = {
+  deviceRequest: string
+  encryptionInfo: string
+}
+
+export type MdocDcApiEncryptedDeviceResponseOptions = {
+  mdocs: [Mdoc, ...Mdoc[]]
+  documentRequests: MdocDocumentRequest[]
+  deviceNameSpaces?: MdocNameSpaces
+  encryptionInfoBase64Url: string
+  origin: string
+}
+
+export type MdocDcApiEncryptedDeviceResponse = {
+  Response: string
+}
+
+export type MdocDcApiVerifyOptions = {
+  encryptedResponse: string
+  encryptionInfoBase64Url: string
+  origin: string
+  readerPrivateJwk: JsonWebKey
+  trustedCertificates?: EncodedX509Certificate[]
   now?: Date
 }
 

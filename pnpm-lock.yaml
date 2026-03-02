@@ -604,6 +604,9 @@ importers:
       ec-compression:
         specifier: 0.0.1-alpha.12
         version: 0.0.1-alpha.12
+      hpke-js:
+        specifier: ^1.6.5
+        version: 1.7.0
       lru_map:
         specifier: ^0.4.1
         version: 0.4.1
@@ -2845,6 +2848,26 @@ packages:
   '@hiero-did-sdk/zstd@0.1.8':
     resolution: {integrity: sha512-P7q223JlO/BuZkZ2Ifkyqdul0O0ywa8xm88yJ0BmAIFBE0j4ft6Iw8Zg3kRMzYZX25vjl0ZssHJIA5LVUnBETg==}
     engines: {node: '>=20'}
+
+  '@hpke/chacha20poly1305@1.7.1':
+    resolution: {integrity: sha512-Zp8IwRIkdCucu877wCNqDp3B8yOhAnAah/YDDkO94pPr/KKV7IGnBbpwIjDB3BsAySWBMrhhdE0JKYw3N4FCag==}
+    engines: {node: '>=16.0.0'}
+
+  '@hpke/common@1.9.0':
+    resolution: {integrity: sha512-Sdxj4KqtmBt8FiwRkNLxXF+peqLR3FwVxtnsemiiEzClgslckRpFv3yK8mchoCwvyRwLOMS3Y2Z9ND2bq3sRVg==}
+    engines: {node: '>=16.0.0'}
+
+  '@hpke/core@1.8.0':
+    resolution: {integrity: sha512-yHuo+2q4HSPUFuxcg87Kiy7QZRk4IeR+cwBB0qW8fHnr71bnRCArM39Cq1bWHBt75gTyeERGD/v1H14yPB2wyw==}
+    engines: {node: '>=16.0.0'}
+
+  '@hpke/dhkem-x25519@1.7.0':
+    resolution: {integrity: sha512-mgqkCUj82jBoKSa55VG/QAih4d5npalRd3uu/U/t3PvvrSbrYjDnok6PDxFwRPh+9aUNRX0tBtxupqtAiT+P1A==}
+    engines: {node: '>=16.0.0'}
+
+  '@hpke/dhkem-x448@1.7.0':
+    resolution: {integrity: sha512-12Qik0A5srTp5D2RbwYorF4OyJePN2Ccej8pM45VbZampZdM6qFmZ2I3vWjUaOcN4L+CgP8U2uzq1g1dpc5MBw==}
+    engines: {node: '>=16.0.0'}
 
   '@hyperledger/anoncreds-nodejs@0.3.4':
     resolution: {integrity: sha512-im5hRRvICM3hoyoJb4RJ7Mape7wIjDR8Tk+g/tHcg9GSPcEsJi+fJdxaHb7WVneycdZXeF6xky8BZwnQD2+Baw==}
@@ -5621,6 +5644,10 @@ packages:
     resolution: {integrity: sha512-puUZAUKT5m8Zzvs72XWy3HtvVbTWljRE66cP60bxJzAqf2DgICo7lYTY2IHUmLnNpjYvw5bvmoHvPc0QO2a62w==}
     engines: {node: ^16.14.0 || >=18.0.0}
 
+  hpke-js@1.7.0:
+    resolution: {integrity: sha512-Ix6O3U7XmCs6Jc+8NkvyxTvk2DXliwYZ8+fDNjOtXC769ypslNIDwMHucaoCDALSyqqr3/pnpDwDx7Icac/iCg==}
+    engines: {node: '>=16.0.0'}
+
   html-escaper@2.0.2:
     resolution: {integrity: sha512-H2iMtd0I4Mt5eYiapRdIDjp+XzelXQ0tFE4JS7YFwFevXXMmOp9myNrUvCg0D6ws8iqkRPBfKHgbwig1SmlLfg==}
 
@@ -6500,7 +6527,6 @@ packages:
 
   metro-react-native-babel-preset@0.73.10:
     resolution: {integrity: sha512-1/dnH4EHwFb2RKEKx34vVDpUS3urt2WEeR8FYim+ogqALg4sTpG7yeQPxWpbgKATezt4rNfqAANpIyH19MS4BQ==}
-    deprecated: Use @react-native/babel-preset instead
     peerDependencies:
       '@babel/core': '*'
 
@@ -10908,6 +10934,24 @@ snapshots:
 
   '@hiero-did-sdk/zstd@0.1.8': {}
 
+  '@hpke/chacha20poly1305@1.7.1':
+    dependencies:
+      '@hpke/common': 1.9.0
+
+  '@hpke/common@1.9.0': {}
+
+  '@hpke/core@1.8.0':
+    dependencies:
+      '@hpke/common': 1.9.0
+
+  '@hpke/dhkem-x25519@1.7.0':
+    dependencies:
+      '@hpke/common': 1.9.0
+
+  '@hpke/dhkem-x448@1.7.0':
+    dependencies:
+      '@hpke/common': 1.9.0
+
   '@hyperledger/anoncreds-nodejs@0.3.4':
     dependencies:
       '@2060.io/ffi-napi': 4.0.9
@@ -14270,6 +14314,14 @@ snapshots:
   hosted-git-info@7.0.2:
     dependencies:
       lru-cache: 10.4.3
+
+  hpke-js@1.7.0:
+    dependencies:
+      '@hpke/chacha20poly1305': 1.7.1
+      '@hpke/common': 1.9.0
+      '@hpke/core': 1.8.0
+      '@hpke/dhkem-x25519': 1.7.0
+      '@hpke/dhkem-x448': 1.7.0
 
   html-escaper@2.0.2: {}
 

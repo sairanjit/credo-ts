@@ -2,7 +2,16 @@ import { AgentContext } from '../../agent'
 import { injectable } from '../../plugins'
 import type { Query, QueryOptions } from '../../storage/StorageService'
 import { Mdoc } from './Mdoc'
-import type { MdocSignOptions, MdocStoreOptions, MdocVerifyOptions } from './MdocOptions'
+import type {
+  MdocDcApiEncryptedDeviceResponse,
+  MdocDcApiEncryptedDeviceResponseOptions,
+  MdocDcApiRequest,
+  MdocDcApiRequestOptions,
+  MdocDcApiVerifyOptions,
+  MdocSignOptions,
+  MdocStoreOptions,
+  MdocVerifyOptions,
+} from './MdocOptions'
 import { MdocService } from './MdocService'
 import type { MdocRecord } from './repository'
 
@@ -69,5 +78,19 @@ export class MdocApi {
 
   public async update(mdocRecord: MdocRecord) {
     return await this.mdocService.update(this.agentContext, mdocRecord)
+  }
+
+  public async createDcApiRequest(options: MdocDcApiRequestOptions): Promise<MdocDcApiRequest> {
+    return this.mdocService.createDcApiRequest(this.agentContext, options)
+  }
+
+  public async createEncryptedDcApiDeviceResponse(
+    options: MdocDcApiEncryptedDeviceResponseOptions
+  ): Promise<MdocDcApiEncryptedDeviceResponse> {
+    return this.mdocService.createEncryptedDcApiDeviceResponse(this.agentContext, options)
+  }
+
+  public async verifyEncryptedDcApiDeviceResponse(options: MdocDcApiVerifyOptions): Promise<Mdoc[]> {
+    return this.mdocService.verifyEncryptedDcApiDeviceResponse(this.agentContext, options)
   }
 }

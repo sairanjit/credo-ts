@@ -4,6 +4,11 @@ import type { Query, QueryOptions } from '../../storage/StorageService'
 import { Mdoc } from './Mdoc'
 import { MdocDeviceResponse } from './MdocDeviceResponse'
 import type {
+  MdocDcApiEncryptedDeviceResponse,
+  MdocDcApiEncryptedDeviceResponseOptions,
+  MdocDcApiRequest,
+  MdocDcApiRequestOptions,
+  MdocDcApiVerifyOptions,
   MdocDeviceResponseOptions,
   MdocDeviceResponsePresentationDefinitionOptions,
   MdocDeviceResponseVerifyOptions,
@@ -50,6 +55,27 @@ export class MdocService {
   public async verifyDeviceResponse(agentContext: AgentContext, options: MdocDeviceResponseVerifyOptions) {
     const deviceResponse = MdocDeviceResponse.fromBase64Url(options.deviceResponse)
     return deviceResponse.verify(agentContext, options)
+  }
+
+  public async createDcApiRequest(
+    agentContext: AgentContext,
+    options: MdocDcApiRequestOptions
+  ): Promise<MdocDcApiRequest> {
+    return MdocDeviceResponse.createDcApiRequest(agentContext, options)
+  }
+
+  public async createEncryptedDcApiDeviceResponse(
+    agentContext: AgentContext,
+    options: MdocDcApiEncryptedDeviceResponseOptions
+  ): Promise<MdocDcApiEncryptedDeviceResponse> {
+    return MdocDeviceResponse.createEncryptedDcApiDeviceResponse(agentContext, options)
+  }
+
+  public async verifyEncryptedDcApiDeviceResponse(
+    agentContext: AgentContext,
+    options: MdocDcApiVerifyOptions
+  ): Promise<Mdoc[]> {
+    return MdocDeviceResponse.verifyEncryptedDcApiDeviceResponse(agentContext, options)
   }
 
   public async store(agentContext: AgentContext, options: MdocStoreOptions) {
