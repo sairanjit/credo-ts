@@ -20,6 +20,7 @@ export type DifPresentationExchangeRequest = {
 }
 
 export type DifPresentationExchangePresentation =
+  | W3cJsonPresentation[]
   | W3cJsonPresentation
   // NOTE: this is not spec compliant, as it doesn't describe how to submit
   // JWT VPs but to support JWT VPs we also allow the value to be a string

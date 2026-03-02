@@ -28,6 +28,7 @@ import {
 } from '@credo-ts/core'
 import { DidCommAttachment, DidCommAttachmentData } from '../../../../decorators/attachment/DidCommAttachment'
 import { DidCommProofFormatSpec } from '../../models'
+import type { DidCommProofExchangeRecord } from '../../repository/DidCommProofExchangeRecord'
 import type { DidCommProofFormatService } from '../DidCommProofFormatService'
 import type {
   DidCommFormatCreateRequestOptions,
@@ -55,8 +56,7 @@ const PRESENTATION_EXCHANGE_PRESENTATION_REQUEST = 'dif/presentation-exchange/de
 const PRESENTATION_EXCHANGE_PRESENTATION = 'dif/presentation-exchange/submission@v1.0'
 
 export class DidCommDifPresentationExchangeProofFormatService
-  implements DidCommProofFormatService<DidCommDifPresentationExchangeProofFormat>
-{
+  implements DidCommProofFormatService<DidCommDifPresentationExchangeProofFormat> {
   public readonly formatKey = 'presentationExchange' as const
 
   private presentationExchangeService(agentContext: AgentContext) {
@@ -224,27 +224,25 @@ export class DidCommDifPresentationExchangeProofFormatService
       throw new CredoError('Failed to create presentation for request.')
     }
 
-    if (presentation.verifiablePresentations.length > 1) {
-      throw new CredoError('Invalid amount of verifiable presentations. Only one is allowed.')
-    }
-
     if (presentation.presentationSubmissionLocation === DifPresentationExchangeSubmissionLocation.EXTERNAL) {
       throw new CredoError('External presentation submission is not supported.')
     }
 
-    const firstPresentation = presentation.verifiablePresentations[0]
-
-    // TODO: they should all have `encoded` property so it's easy to use the resulting VP
-    const encodedFirstPresentation =
-      firstPresentation instanceof W3cJwtVerifiablePresentation ||
-      firstPresentation instanceof W3cJsonLdVerifiablePresentation
-        ? firstPresentation.encoded
-        : firstPresentation instanceof MdocDeviceResponse
-          ? firstPresentation.base64Url
-          : firstPresentation?.compact
-    const attachment = this.getFormatData(encodedFirstPresentation, format.attachmentId)
-
-    return { attachment, format }
+    const encodedPresentations = presentation.verifiablePresentations.map((vp) => {
+      if (vp instanceof W3cJwtVerifiablePresentation || vp instanceof W3cJsonLdVerifiablePresentation) {
+        return vp.encoded
+      } else if (vp instanceof MdocDeviceResponse) {
+        return vp.base64Url
+      } else {
+        return vp?.compact
+      }
+    })
+    const attachmentData = encodedPresentations.length === 1 ? encodedPresentations[0] : encodedPresentations;
+    const attachment = this.getFormatData(attachmentData, format.attachmentId);
+    return {
+      attachment,
+      format
+    }
   }
 
   private shouldVerifyUsingAnonCredsDataIntegrity(
@@ -264,11 +262,40 @@ export class DidCommDifPresentationExchangeProofFormatService
     agentContext: AgentContext,
     { requestAttachment, attachment, proofRecord }: DidCommProofFormatProcessPresentationOptions
   ): Promise<boolean> {
+    const presentation = attachment.getDataAsJson<DifPresentationExchangePresentation>()
+
+    if (Array.isArray(presentation)) {
+      const results = await Promise.all(
+        presentation.map((singlePresentation) =>
+          this.verifySinglePresentation(agentContext, {
+            requestAttachment,
+            presentation: singlePresentation,
+            proofRecord,
+          })
+        )
+      )
+      return results.every((result) => result === true)
+    }
+
+    return this.verifySinglePresentation(agentContext, { requestAttachment, presentation, proofRecord })
+  }
+
+  private async verifySinglePresentation(
+    agentContext: AgentContext,
+    {
+      requestAttachment,
+      presentation,
+      proofRecord,
+    }: {
+      requestAttachment: DidCommAttachment
+      presentation: DifPresentationExchangePresentation
+      proofRecord: DidCommProofExchangeRecord
+    }
+  ): Promise<boolean> {
     const ps = this.presentationExchangeService(agentContext)
     const w3cCredentialService = agentContext.dependencyManager.resolve(W3cCredentialService)
 
     const request = requestAttachment.getDataAsJson<DifPresentationExchangeRequest>()
-    const presentation = attachment.getDataAsJson<DifPresentationExchangePresentation>()
     let parsedPresentation: W3cVerifiablePresentation
     let jsonPresentation: W3cJsonPresentation
 
@@ -370,8 +397,8 @@ export class DidCommDifPresentationExchangeProofFormatService
       } else {
         agentContext.config.logger.error(
           `Received presentation in PEX proof format with unsupported format ${
-            // biome-ignore lint/suspicious/noExplicitAny: no explanation
-            (parsedPresentation as any).claimFormat
+          // biome-ignore lint/suspicious/noExplicitAny: no explanation
+          (parsedPresentation as any).claimFormat
           }.`
         )
         return false

@@ -32,6 +32,26 @@ const jsonld = {
   },
 }
 
+const _jsonLd2 = {
+  credential: {
+    '@context': [CREDENTIALS_CONTEXT_V1_URL, 'https://www.w3.org/2018/credentials/examples/v1'],
+    type: ['VerifiableCredential', 'UniversityDegreeCredential'],
+    issuer: 'did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL',
+    issuanceDate: '2017-10-22T12:23:48Z',
+    credentialSubject: {
+      id: 'did:key:z6Mkgg342Ycpuk263R9d8Aq6MUaxPn1DDeHyGo38EefXmgDL',
+      degree: {
+        type: 'BachelorDegree',
+        name: 'Bachelor of Science and Arts',
+      },
+    },
+  },
+  options: {
+    proofType: 'Ed25519Signature2018',
+    proofPurpose: 'assertionMethod',
+  },
+}
+
 describe('Present Proof', () => {
   let proverAgent: Agent<ReturnType<typeof getJsonLdModules>>
   let issuerAgent: Agent<ReturnType<typeof getJsonLdModules>>
@@ -42,19 +62,19 @@ describe('Present Proof', () => {
 
   beforeAll(async () => {
     testLogger.test('Initializing the agents')
-    ;({
-      holderAgent: proverAgent,
-      issuerAgent,
-      verifierAgent,
-      issuerHolderConnectionId: issuerProverConnectionId,
-      holderVerifierConnectionId: proverVerifierConnectionId,
-    } = await setupJsonLdTests({
-      holderName: 'presentation exchange prover agent',
-      issuerName: 'presentation exchange issuer agent',
-      verifierName: 'presentation exchange verifier agent',
-      createConnections: true,
-      autoAcceptCredentials: DidCommAutoAcceptCredential.Always,
-    }))
+      ; ({
+        holderAgent: proverAgent,
+        issuerAgent,
+        verifierAgent,
+        issuerHolderConnectionId: issuerProverConnectionId,
+        holderVerifierConnectionId: proverVerifierConnectionId,
+      } = await setupJsonLdTests({
+        holderName: 'presentation exchange prover agent',
+        issuerName: 'presentation exchange issuer agent',
+        verifierName: 'presentation exchange verifier agent',
+        createConnections: true,
+        autoAcceptCredentials: DidCommAutoAcceptCredential.Always,
+      }))
 
     const issuerKey = await issuerAgent.kms.importKey({
       privateJwk: transformPrivateKeyToPrivateJwk({
