@@ -1,4 +1,5 @@
 import type { ValidityInfo } from '@animo-id/mdoc'
+import type { JsonWebKey } from '../../crypto/webcrypto/types'
 import type { AnyUint8Array } from '../../types'
 import type { DifPresentationExchangeDefinition } from '../dif-presentation-exchange'
 import { PublicJwk } from '../kms'

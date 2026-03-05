@@ -103,7 +103,6 @@ describe('mdoc DC API device-response test', () => {
       nonce,
       recipientPublicJwk: readerPublicJwk,
     })
-    console.log("🚀 ~ dcApiRequest:", dcApiRequest)
 
     expect(dcApiRequest.deviceRequest).toBeDefined()
     expect(dcApiRequest.encryptionInfo).toBeDefined()
@@ -119,7 +118,6 @@ describe('mdoc DC API device-response test', () => {
       encryptionInfoBase64Url: dcApiRequest.encryptionInfo,
       origin,
     })
-    console.log("🚀 ~ encryptedResponse:", encryptedResponse)
 
     expect(encryptedResponse.Response).toBeDefined()
     expect(typeof encryptedResponse.Response).toBe('string')
@@ -135,6 +133,5 @@ describe('mdoc DC API device-response test', () => {
 
     // 5. Assert returned documents
     expect(verifiedDocs).toHaveLength(1)
-    console.log("🚀 ~ verifiedDocs:", verifiedDocs)
   })
 })
