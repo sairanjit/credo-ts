@@ -1,6 +1,7 @@
 export { DateOnly } from '@animo-id/mdoc'
 export * from './Mdoc'
 export * from './MdocApi'
+export * from './MdocDcApiRequest'
 export * from './MdocDeviceResponse'
 export * from './MdocError'
 export * from './MdocModule'

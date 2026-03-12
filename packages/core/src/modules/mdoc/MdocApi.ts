@@ -6,7 +6,9 @@ import type {
   MdocDcApiEncryptedDeviceResponse,
   MdocDcApiEncryptedDeviceResponseOptions,
   MdocDcApiRequest,
+  MdocDcApiRequestResolution,
   MdocDcApiRequestOptions,
+  MdocDcApiResolveOptions,
   MdocDcApiVerifyOptions,
   MdocSignOptions,
   MdocStoreOptions,
@@ -82,6 +84,14 @@ export class MdocApi {
 
   public async createDcApiRequest(options: MdocDcApiRequestOptions): Promise<MdocDcApiRequest> {
     return this.mdocService.createDcApiRequest(this.agentContext, options)
+  }
+
+  public parseDcApiDeviceRequest(deviceRequestBase64Url: string) {
+    return this.mdocService.parseDcApiDeviceRequest(deviceRequestBase64Url)
+  }
+
+  public async resolveDcApiRequest(options: MdocDcApiResolveOptions): Promise<MdocDcApiRequestResolution> {
+    return this.mdocService.resolveDcApiRequest(this.agentContext, options)
   }
 
   public async createEncryptedDcApiDeviceResponse(

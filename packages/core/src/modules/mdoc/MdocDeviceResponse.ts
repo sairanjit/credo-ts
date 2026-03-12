@@ -551,7 +551,7 @@ export class MdocDeviceResponse {
     })
 
     return {
-      Response: buildEncryptedResponseBase64Url(enc, cipherText),
+      response: buildEncryptedResponseBase64Url(enc, cipherText),
     }
   }
 

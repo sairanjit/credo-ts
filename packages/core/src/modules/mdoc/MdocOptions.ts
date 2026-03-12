@@ -1,4 +1,4 @@
-import type { ValidityInfo } from '@animo-id/mdoc'
+import type { ReaderAuth, ValidityInfo } from '@animo-id/mdoc'
 import type { JsonWebKey } from '../../crypto/webcrypto/types'
 import type { AnyUint8Array } from '../../types'
 import type { DifPresentationExchangeDefinition } from '../dif-presentation-exchange'
@@ -121,6 +121,50 @@ export type MdocDcApiRequest = {
   encryptionInfo: string
 }
 
+export type MdocDeviceRequestUseCase = {
+  id?: string
+  name?: string
+  purpose?: string
+  mandatory?: boolean
+  documentSets?: number[][]
+}
+
+export type MdocDeviceRequestInfo = {
+  useCases?: MdocDeviceRequestUseCase[]
+} & Record<string, unknown>
+
+export type MdocDcApiParsedDocumentRequest = MdocDocumentRequest & {
+  readerAuth?: ReaderAuth
+}
+
+export type MdocDcApiParsedDeviceRequest = {
+  version: string
+  documentRequests: MdocDcApiParsedDocumentRequest[]
+  deviceRequestInfo?: MdocDeviceRequestInfo
+  readerAuthAll?: ReaderAuth[]
+}
+
+export type MdocDcApiResolveOptions = {
+  /**
+   * The base64url encoded DeviceRequest.
+   */
+  deviceRequest: string
+  /**
+   * If true (default), only return matches where all requested namespaces and data elements are present.
+   */
+  requireAllNamespaces?: boolean
+}
+
+export type MdocDcApiRequestMatch = {
+  documentRequest: MdocDocumentRequest
+  matchingRecords: MdocRecord[]
+}
+
+export type MdocDcApiRequestResolution = {
+  parsedRequest: MdocDcApiParsedDeviceRequest
+  matches: MdocDcApiRequestMatch[]
+}
+
 export type MdocDcApiEncryptedDeviceResponseOptions = {
   mdocs: [Mdoc, ...Mdoc[]]
   documentRequests: MdocDocumentRequest[]
@@ -130,7 +174,7 @@ export type MdocDcApiEncryptedDeviceResponseOptions = {
 }
 
 export type MdocDcApiEncryptedDeviceResponse = {
-  Response: string
+  response: string
 }
 
 export type MdocDcApiVerifyOptions = {

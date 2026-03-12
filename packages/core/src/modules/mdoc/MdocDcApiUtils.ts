@@ -1,15 +1,31 @@
 import { COSEKey, COSEKeyToRAW, cborDecode, cborEncode } from '@animo-id/mdoc'
-import { AeadId, CipherSuite, KdfId, KemId } from 'hpke-js'
 import type { JsonWebKey } from '../../crypto/webcrypto/types'
 import { TypedArrayEncoder } from '../../utils'
 import type { PublicJwk } from '../kms'
 
-function createHpkeSuite() {
+async function createHpkeSuite() {
+  const { AeadId, CipherSuite, KdfId, KemId } = await import('hpke-js')
+
   return new CipherSuite({
     kem: KemId.DhkemP256HkdfSha256,
     kdf: KdfId.HkdfSha256,
     aead: AeadId.Aes128Gcm,
   })
+}
+
+function toExactArrayBuffer(bytes: Uint8Array): ArrayBuffer {
+  if (bytes.buffer instanceof ArrayBuffer) {
+    if (bytes.byteOffset === 0 && bytes.byteLength === bytes.buffer.byteLength) {
+      return bytes.buffer
+    }
+
+    return bytes.buffer.slice(bytes.byteOffset, bytes.byteOffset + bytes.byteLength)
+  }
+
+  // SharedArrayBuffer or other ArrayBufferLike -> copy into a real ArrayBuffer
+  const copy = new Uint8Array(bytes.byteLength)
+  copy.set(bytes)
+  return copy.buffer
 }
 
 /**
@@ -21,15 +37,15 @@ export async function hpkeEncrypt(options: {
   info: Uint8Array
   plaintext: Uint8Array
 }): Promise<{ enc: Uint8Array; cipherText: Uint8Array }> {
-  const suite = createHpkeSuite()
-  const recipientPublicKey = await suite.kem.importKey('raw', options.recipientPublicKeyBytes, true)
+  const suite = await createHpkeSuite()
+  const recipientPublicKey = await suite.kem.importKey('raw', toExactArrayBuffer(options.recipientPublicKeyBytes), true)
 
   const sender = await suite.createSenderContext({
     recipientPublicKey,
-    info: options.info,
+    info: toExactArrayBuffer(options.info),
   })
 
-  const cipherTextBuffer = await sender.seal(options.plaintext)
+  const cipherTextBuffer = await sender.seal(toExactArrayBuffer(options.plaintext))
 
   return {
     enc: new Uint8Array(sender.enc),
@@ -47,16 +63,16 @@ export async function hpkeDecrypt(options: {
   info: Uint8Array
   cipherText: Uint8Array
 }): Promise<Uint8Array> {
-  const suite = createHpkeSuite()
+  const suite = await createHpkeSuite()
   const recipientKey = await suite.kem.importKey('jwk', options.recipientPrivateJwk, false)
 
   const recipient = await suite.createRecipientContext({
     recipientKey,
     enc: options.enc,
-    info: options.info,
+    info: toExactArrayBuffer(options.info),
   })
 
-  const plaintext = await recipient.open(options.cipherText)
+  const plaintext = await recipient.open(toExactArrayBuffer(options.cipherText))
   return new Uint8Array(plaintext)
 }
 
